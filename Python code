@@ -1,0 +1,80 @@
+[8:33 PM, 4/28/2024] sourav: def bytetostring(mybt):
+    # convert bytes to encode
+    bytecode = bytes(mybt, encoding='cp1252')
+    z = bytecode.decode('unicode-escape')
+    z = z.split('Â')
+    z = ''.join(z)
+    return z
+[8:33 PM, 4/28/2024] sourav: import re
+
+
+def text_remov(on_time_weather, mains):
+    for m in mains:
+        if "span" in m:
+            xs = re.sub(r'span class|=|\[A-Z][A-Z][A-Z]\d\w>', '', m)
+            x = xs.strip().split('>')[1]
+            on_time_weather.append(x)
+        else:
+            ''
+[8:33 PM, 4/28/2024] sourav: import re
+
+dashes = "---------------------------------------------------"
+status_name = " Enter Name of the place\n for weather status"
+
+print(dashes)
+print(" ")
+print(status_name)
+print(dashes)
+ask_weather = str(input('|>>=======>>> '))
+mycountry = re.sub(' ', '+', ask_weather)
+print(" ")
+[8:33 PM, 4/28/2024] sourav: from bytostr import bytetostring
+from extract_txt import text_remov
+from intro_ques import *
+from read_the_urls import url_reader
+from weather_report import weather_info
+
+urls = f"https://www.google.com/search?channel=fs&client=ubuntu&q={mycountry}+weather"  # read the urls
+
+url_reader(urls)  # read_the_url
+
+data = url_reader(urls)  # store as dataa
+datas = str(data)  # convert to str
+make_as_list = datas.split('<')
+
+Curr_weather = []  # o_t_w is on time weather
+text_remov(Curr_weather, make_as_list)
+
+clear_spaces = [Curr_weather[m] for m in range(0, len(Curr_weather)) if
+                len(Curr_weather[m]) != 0 and len(Curr_weather[m]) != 2]  # remove empty string from the weather
+
+weather_collection = clear_spaces[1:8]  # weathers list w__
+weather_country…
+[8:33 PM, 4/28/2024] sourav: import urllib.request
+
+
+def url_reader(url_name):
+    try:
+        url = url_name
+        user = 'Mozilla/5.0 (Windows; U; \
+      Windows NT 5.1; en-US; rv:1.9.0.7) \
+      Gecko/2009021910 Firefox/3.0.7'
+        my_headers = {'User-Agent': user}
+        req = urllib.request.Request(url, None, my_headers)
+        res = urllib.request.urlopen(req)
+        s_data = res.read()
+        return s_data
+    except:
+        print("turn on your internet,then proceed again")
+[8:33 PM, 4/28/2024] sourav: def weather_info(celsius, country, country_time, status):
+    country_times = country_time.split(' ')
+    country_check = country_times[1]
+    if country_check[0] in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']:
+        print('+' + '-' * 32)
+        print(' ')
+        make_lc = [celsius, country, country_time, status]
+        [print('{}'.format(make).center(30)) for make in make_lc]
+        print(' ')
+        print(weather_info.code.co_consts[5])
+    else:
+        print("please enter valid country name")
