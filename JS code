@@ -1,0 +1,153 @@
+const api = {
+    key: "fcc8de7015bbb202209bbf0261babf4c",
+    base: "https://api.openweathermap.org/data/2.5/"
+}
+
+const searchbox = document.querySelector('.search-box');
+searchbox.addEventListener('keypress', setQuery);
+
+function setQuery(evt) {
+    if (evt.key === "Enter") {
+        getResults(searchbox.value);
+    }
+}
+
+function getResults(query) {
+    fetch(`${api.base}weather?q=${query}&units=metric&APPID=${api.key}`)
+        .then(response => response.json())
+        .then(displayResults)
+        .catch(error => console.log("Error fetching weather:", error));
+}
+
+function displayResults(weather) {
+    let city = document.querySelector('.location .city');
+    city.innerText = `${weather.name}, ${weather.sys.country}`;
+
+    let now = new Date();
+    let date = document.querySelector('.location .date');
+    date.innerText = dateBuilder(now);
+
+    let temp = document.querySelector('.current .temp');
+    temp.innerHTML = `${Math.round(weather.main.temp)}<span>°c</span>`;
+
+    let weather_el = document.querySelector('.current .weather');
+    weather_el.innerText = weather.weather[0].main;
+
+    let hilow = document.querySelector('.hi-low');
+    hilow.innerText = `${Math.round(weather.main.temp_min)}°c / ${Math.round(weather.main.temp_max)}°c`;
+
+    let humidity = document.querySelector('.current .details .humidity');
+    humidity.innerText = `Humidity: ${weather.main.humidity}%`;
+
+    let pressure = document.querySelector('.current .details .pressure');
+    pressure.innerText = `Pressure: ${weather.main.pressure} hPa`;
+
+    let visibility = document.querySelector('.current .details .visibility');
+    visibility.innerText = `Visibility: ${weather.visibility / 1000} km`;
+
+    let airQuality = document.querySelector('.current .details .air-quality');
+    airQuality.innerText = `Air Quality Index: ${weather.main.aqi}`;
+}
+
+function dateBuilder(d) {
+    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    let day = days[d.getDay()];
+    let date = d.getDate();
+    let month = months[d.getMonth()];
+    let year = d.getFullYear();
+
+    return `${day} ${date} ${month} ${year}`;
+}
+// Existing JavaScript code
+
+// Selecting buttons and adding event listeners
+const btnHumidity = document.querySelector('.btn-humidity');
+const btnPressure = document.querySelector('.btn-pressure');
+const btnVisibility = document.querySelector('.btn-visibility');
+const btnAirQuality = document.querySelector('.btn-air-quality');
+const infoDisplay = document.querySelector('.info-display');
+
+btnHumidity.addEventListener('click', () => displayInfo("Humidity", "80%"));
+btnPressure.addEventListener('click', () => displayInfo("Pressure", "1013 hPa"));
+btnVisibility.addEventListener('click', () => displayInfo("Visibility", "10 km"));
+btnAirQuality.addEventListener('click', () => displayInfo("Air Quality", "50"));
+
+// Function to display information
+function displayInfo(title, value) {
+    infoDisplay.innerHTML = `<strong>${title}:</strong> ${value}`;
+}
+
+// Existing code
+
+// Function to fetch weather data for a given city
+function getWeatherData(city) {
+    return fetch(`${api.base}weather?q=${city}&units=metric&APPID=${api.key}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('City not found');
+            }
+            return response.json();
+        });
+}
+
+// Function to update weather information on the page
+function updateWeatherInfo(weather) {
+    let city = document.querySelector('.location .city');
+    city.innerText = `${weather.name}, ${weather.sys.country}`;
+
+    let temp = document.querySelector('.current .temp');
+    temp.innerHTML = `${Math.round(weather.main.temp)}<span>°c</span>`;
+
+    let weather_el = document.querySelector('.current .weather');
+    weather_el.innerText = weather.weather[0].main;
+
+    let hilow = document.querySelector('.hi-low');
+    hilow.innerText = `${Math.round(weather.main.temp_min)}°c / ${Math.round(weather.main.temp_max)}°c`;
+}
+
+// Function to display specific weather information (humidity, pressure, visibility, air quality)
+function displayWeatherInfo(title, value) {
+    let infoDisplay = document.querySelector('.info-display');
+    infoDisplay.innerHTML = `<strong>${title}:</strong> ${value}`;
+}
+
+// Event listeners for buttons
+document.querySelectorAll('.btn-humidity, .btn-pressure, .btn-visibility, .btn-air-quality').forEach(button => {
+    button.addEventListener('click', function () {
+        let city = document.querySelector('.search-box').value;
+        getWeatherData(city)
+            .then(weather => {
+                switch (this.classList[0]) {
+                    case 'btn-humidity':
+                        displayWeatherInfo("Humidity", `${weather.main.humidity}%`);
+                        break;
+                    case 'btn-pressure':
+                        displayWeatherInfo("Pressure", `${weather.main.pressure} hPa`);
+                        break;
+                    case 'btn-visibility':
+                        displayWeatherInfo("Visibility", `${weather.visibility / 1000} km`);
+                        break;
+                    case 'btn-air-quality':
+                        displayWeatherInfo("Air Quality", `${weather.main.aqi}`);
+                        break;
+                }
+            })
+            .catch(error => console.log(error.message));
+    });
+});
+
+// Function to initialize weather data for the default city
+function initializeWeatherData() {
+    let defaultCity = "Chandigarh"; // You can change the default city here
+    getWeatherData(defaultCity)
+        .then(weather => {
+            updateWeatherInfo(weather);
+        })
+        .catch(error => console.log(error.message));
+}
+
+// Initialize weather data when the page loads
+window.addEventListener('load', initializeWeatherData);
+
